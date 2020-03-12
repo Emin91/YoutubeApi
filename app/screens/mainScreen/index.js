@@ -5,9 +5,8 @@ import styles from './style';
 const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/playlistItems';
 const GOOGLE_API_KEY = 'AIzaSyASEhqwHiMLA-YZsqbpkPwwKbyq_7FnRh0';
 const PLAYLIST_ID = 'RD_VONMkKkdf4';
-// const PLAYLIST_ID = 'PLRLkh2Z7RSaF6ellRdIYxOoVhcqbjLndP';
 
-const MainScreen = () => {
+const MainScreen = ({navigation}) => {
   const [data, setData] = useState({});
 
   useEffect(() => {
@@ -45,6 +44,7 @@ const MainScreen = () => {
               <TouchableOpacity
                 activeOpacity={0.6}
                 key={id}
+                onPress={() => navigation.navigate('YoutubeScreen', videoId)}
                 style={styles.mainView}>
                 <View style={styles.imgView}>
                   <Image style={{flex: 1}} source={{uri: url}} />
@@ -67,32 +67,3 @@ const MainScreen = () => {
 };
 
 export default MainScreen;
-
-// {items.map(
-//   ({
-//     id,
-//     snippet: {
-//       title,
-//       thumbnails: {
-//         default: {url},
-//       },
-//     },
-//   }) => {
-//     return (
-//       <TouchableOpacity
-//         key={id}
-//         activeOpacity={0.6}
-//         style={{
-//           width: '100%',
-//           height: 60,
-//           marginTop: 5,
-//           justifyContent: 'space-around',
-//           backgroundColor: '#d2d2d2',
-//         }}>
-//         <Text>{title}</Text>
-//         <Text>Description</Text>
-//         <Image source={{uri: url}} style={{width: 80, height: 80}} />
-//       </TouchableOpacity>
-//     );
-//   },
-// )}
