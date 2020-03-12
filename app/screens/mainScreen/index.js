@@ -1,119 +1,98 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Button, FlatList} from 'react-native';
-import PlaylistSummary from 'youtube-playlist-summary';
-import {YouTubeStandaloneAndroid} from 'react-native-youtube';
+import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
+import styles from './style';
+
+const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/playlistItems';
+const GOOGLE_API_KEY = 'AIzaSyASEhqwHiMLA-YZsqbpkPwwKbyq_7FnRh0';
+const PLAYLIST_ID = 'RD_VONMkKkdf4';
+// const PLAYLIST_ID = 'PLRLkh2Z7RSaF6ellRdIYxOoVhcqbjLndP';
 
 const MainScreen = () => {
-  const [data, setData] = useState([]);
-  const [people, setPeople] = useState([
-    {name: 'zzzz', key: '1'},
-    {name: 'zsxsxzzz', key: '2'},
-    {name: 'zzsxsxzz', key: '3'},
-  ]);
+  const [data, setData] = useState({});
 
-  const config = {
-    GOOGLE_API_KEY: 'AIzaSyASEhqwHiMLA-YZsqbpkPwwKbyq_7FnRh0', // require
-    PLAYLIST_ITEM_KEY: [
-      // 'publishedAt',
-      'title',
-      // 'description',
-      // 'videoId',
-      // 'videoUrl',
-    ], // option
-  };
-
-  const ps = new PlaylistSummary(config);
-  const CHANNEL_ID = 'UCQCaS3atWyNHEy5PkDXdpNg';
-  const PLAY_LIST_ID = 'PLR9tbNj0VLOOn9P48-OBUB5c8T4E5XFfs';
-
-  const itemsRender = () => {
+  useEffect(() => {
     fetch(
-      'https://www.googleapis.com/youtube/v3/channels?part=contentDetails&key=AIzaSyASEhqwHiMLA-YZsqbpkPwwKbyq_7FnRh0&id=UCQCaS3atWyNHEy5PkDXdpNg',
-      {
-        method: 'get',
-      },
+      `${YOUTUBE_API_URL}?part=snippet&playlistId=${PLAYLIST_ID}&key=${GOOGLE_API_KEY}&maxResults=50`,
     )
       .then(response => response.json())
       .then(responseJson => {
         setData(responseJson);
-        console.log('Thiiiiiiiiiiiiiiiiiiiiissxsxs', data);
+        console.log('My data------->>>', data);
       })
       .catch(error => {
-        //console.error(error);
+        console.log('Error', error);
       });
-  };
+  }, []);
 
-  return (
-    <View>
-      <Button title="Click" onPress={itemsRender} />
-      <FlatList
-        data={data.items}
-        // keyExtractor={data.id}
-        renderItem={({item}) => {
-          return <Text>{item.etag}</Text>;
-        }}
-      />
+  const {items} = data;
+
+  return !items ? null : (
+    <View style={{flex: 1, backgroundColor: '#141414'}}>
+      <ScrollView>
+        {items.map(
+          ({
+            id,
+            snippet: {
+              title,
+              description,
+              resourceId: {videoId},
+              thumbnails: {
+                default: {url},
+              },
+            },
+          }) => {
+            return (
+              <TouchableOpacity
+                activeOpacity={0.6}
+                key={id}
+                style={styles.mainView}>
+                <View style={styles.imgView}>
+                  <Image style={{flex: 1}} source={{uri: url}} />
+                </View>
+                <View style={styles.titlesView}>
+                  <View style={styles.title}>
+                    <Text>{title}</Text>
+                  </View>
+                  <View style={styles.subTitle}>
+                    <Text numberOfLines={2}>{description}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          },
+        )}
+      </ScrollView>
     </View>
   );
 };
 
 export default MainScreen;
-// {
-//   "kind": "youtube#playlist",
-//   "etag": etag,
-//   "id": string,
-//   "snippet": {
-//     "publishedAt": datetime,
-//     "channelId": string,
-//     "title": string,
-//     "description": string,
-//     "thumbnails": {
-//       (key): {
-//         "url": string,
-//         "width": unsigned integer,
-//         "height": unsigned integer
-//       }
-//     },
-//     "channelTitle": string,
-//     "tags": [
-//       string
-//     ],
-//     "defaultLanguage": string,
-//     "localized": {
-//       "title": string,
-//       "description": string
-//     }
-//   },
-//   "status": {
-//     "privacyStatus": string
-//   },
-//   "contentDetails": {
-//     "itemCount": unsigned integer
-//   },
-//   "player": {
-//     "embedHtml": string
-//   },
-//   "localizations": {
-//     (key): {
-//       "title": string,
-//       "description": string
-//     }
-//   }
-// }
 
-// {
-//   "etag": "\"SJZWTG6xR0eGuCOh2bX6w3s4F94/aRMMufx7nKyuBvvxunBgWYbXhsY\"",
-//   "items": [
-//               {
-//                 "contentDetails": [Object],
-//                 "etag": "\"SJZWTG6xR0eGuCOh2bX6w3s4F94/bur2rLGzok-9oP9AhjybqkNgynI\"",
-//                 "id": "UCQCaS3atWyNHEy5PkDXdpNg",
-//                 "kind": "youtube#channel"
-//               }
-//             ],
-//                 "kind": "youtube#channelListResponse",
-//                 "pageInfo": {
-//                               "resultsPerPage": 1,
-//                               "totalResults": 1
-//                             }
-// }
+// {items.map(
+//   ({
+//     id,
+//     snippet: {
+//       title,
+//       thumbnails: {
+//         default: {url},
+//       },
+//     },
+//   }) => {
+//     return (
+//       <TouchableOpacity
+//         key={id}
+//         activeOpacity={0.6}
+//         style={{
+//           width: '100%',
+//           height: 60,
+//           marginTop: 5,
+//           justifyContent: 'space-around',
+//           backgroundColor: '#d2d2d2',
+//         }}>
+//         <Text>{title}</Text>
+//         <Text>Description</Text>
+//         <Image source={{uri: url}} style={{width: 80, height: 80}} />
+//       </TouchableOpacity>
+//     );
+//   },
+// )}
