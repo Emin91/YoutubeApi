@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
-import styles from './style';
+import {View, ScrollView} from 'react-native';
+import CardView from './cardView';
 
 const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/playlistItems';
 const GOOGLE_API_KEY = 'AIzaSyASEhqwHiMLA-YZsqbpkPwwKbyq_7FnRh0';
@@ -26,7 +26,7 @@ const MainScreen = ({navigation}) => {
   const {items} = data;
 
   return !items ? null : (
-    <View style={{flex: 1, backgroundColor: '#141414'}}>
+    <View style={{flex: 1}}>
       <ScrollView>
         {items.map(
           ({
@@ -41,23 +41,13 @@ const MainScreen = ({navigation}) => {
             },
           }) => {
             return (
-              <TouchableOpacity
-                activeOpacity={0.6}
+              <CardView
                 key={id}
+                source={{uri: url}}
+                title={title}
+                description={description}
                 onPress={() => navigation.navigate('YoutubeScreen', videoId)}
-                style={styles.mainView}>
-                <View style={styles.imgView}>
-                  <Image style={{flex: 1}} source={{uri: url}} />
-                </View>
-                <View style={styles.titlesView}>
-                  <View style={styles.title}>
-                    <Text>{title}</Text>
-                  </View>
-                  <View style={styles.subTitle}>
-                    <Text numberOfLines={2}>{description}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+              />
             );
           },
         )}
